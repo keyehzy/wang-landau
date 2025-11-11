@@ -10,9 +10,11 @@ EIGEN3_INCLUDE_DIR = os.path.join("/opt/homebrew/Cellar/eigen/3.4.0_1", "include
 INCLUDES = [EIGEN3_INCLUDE_DIR]
 
 EXAMPLES_SRCS = [
-    "examples/ising_model.h",
-    "examples/measure.h",
-    "examples/utils.h",
+    "src/examples/ising_model.h",
+    "src/examples/measure.h",
+    "src/examples/utils.h",
+    "src/examples/example_measure.cpp",
+    "src/wang_landau.h",
 ]
 
 SRCS = [*EXAMPLES_SRCS]
