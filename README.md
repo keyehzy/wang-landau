@@ -5,7 +5,7 @@ This repository contains an implementation of the Wang-Landau algorithm for esti
 # Requirements
 
 - C++20 compiler 
-- [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) library.
+- [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) library
 
 # Building
 
