@@ -139,5 +139,6 @@ MCStats monte_carlo(Eigen::MatrixXd spins, const Eigen::VectorXd& energy_grid, c
         }
     }
 
+    stats.finalize();
     return stats;
 }

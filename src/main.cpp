@@ -13,9 +13,7 @@ int main() {
     double dE = 4.0 * model.J();
     size_t num_bins = static_cast<size_t>((max_energy - min_energy) / dE) + 1;
     auto energy_grid = Eigen::VectorXd::LinSpaced(num_bins, min_energy, max_energy);
-
     auto stats = monte_carlo(spins, energy_grid, model, rng);
-    stats.finalize();
     
     Eigen::MatrixXd output(energy_grid.size(), 2);
     output << energy_grid, stats.g;

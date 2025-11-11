@@ -12,9 +12,7 @@ int main() {
     double dE = 4.0 * model.J();
     size_t num_bins = static_cast<size_t>((max_energy - min_energy) / dE) + 1;
     auto energy_grid = Eigen::VectorXd::LinSpaced(num_bins, min_energy, max_energy);
-
     auto stats = monte_carlo(spins, energy_grid, model, rng);
-    stats.finalize();
 
     auto beta_grid = Eigen::VectorXd::LinSpaced(1000, 0.1, 10.0);
     for (double beta : beta_grid) {
