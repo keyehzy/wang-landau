@@ -44,7 +44,7 @@ public:
 
     /// Choose a random spin from the grid. Returns its coordinates and the energy change if flipped.
     std::tuple<size_t, double> choose_random_element(const Eigen::MatrixXd& spins, std::mt19937& rng) const override {
-        static std::uniform_int_distribution<size_t> dist(0, spins.rows() * spins.cols() - 1);
+        std::uniform_int_distribution<size_t> dist(0, spins.rows() * spins.cols() - 1);
         size_t linear_index = dist(rng);
         size_t row = linear_index / spins.cols();
         size_t col = linear_index % spins.cols();

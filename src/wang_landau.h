@@ -33,16 +33,6 @@ struct MCStats {
         return max_rel_dev;
     }
 
-    /// Try to flatten the histogram. If flat enough, reset histogram and reduce factor.
-    /// Return wheter the histogram was flattened.
-    bool try_flatten_histogram() {
-        if (histogram_flatness() < 0.2) {
-            histogram.setZero();
-            return true;
-        }
-        return false;
-    }
-
     /// Fill in missing values in the density of states using linear interpolation.
     void interpolate() {
         for (int i = 0; i < g.size(); ++i) {
@@ -92,19 +82,19 @@ struct MCStats {
     Eigen::VectorXd g;
 };
 
-template <typename Model>
-MCStats monte_carlo(Eigen::MatrixXd spins, const Eigen::VectorXd& energy_grid, const Model& model, std::mt19937& rng) {
+template <typename Configuration, typename Model>
+MCStats monte_carlo(Configuration conf , const Eigen::VectorXd& energy_grid, const Model& model, std::mt19937& rng) {
     double max_energy = energy_grid.maxCoeff();
     double min_energy = energy_grid.minCoeff();
     size_t num_bins   = energy_grid.size();
     double bin_width  = (max_energy - min_energy) / (num_bins - 1);
     MCStats stats(num_bins);
     
-    double current_energy = model.measure_energy(spins);
+    double current_energy = model.measure_energy(conf);
     double factor = 1.0;
 
     for (size_t step = 0; /*loop*/ ; ++step) {
-        auto [index, delta_energy] = model.choose_random_element(spins, rng);
+        auto [index, delta_energy] = model.choose_random_element(conf, rng);
         double new_energy = current_energy + delta_energy;
 
         assert(current_energy >= min_energy && current_energy <= max_energy);
@@ -117,24 +107,25 @@ MCStats monte_carlo(Eigen::MatrixXd spins, const Eigen::VectorXd& energy_grid, c
         assert(new_bin < (size_t)stats.g.size());
 
         // Metropolis criterion
-        if (stats.g[new_bin] < stats.g[current_bin] ||
-            std::exp(stats.g[current_bin] - stats.g[new_bin]) > std::uniform_real_distribution<>(0.0, 1.0)(rng)) {
-            model.modify_element(spins, index);
+        std::uniform_real_distribution<> dist(0.0, 1.0);
+        if (stats.g[new_bin] < stats.g[current_bin] || std::exp(stats.g[current_bin] - stats.g[new_bin]) > dist(rng)) {
+            model.modify_element(conf, index);
             current_bin = new_bin;
             current_energy = new_energy;
         }
 
         /// log_g(E) <-- log_g(E) + f
-        /// H(E)    <-- H(E) + 1
+        /// H(E) <-- H(E) + 1
         stats.histogram[current_bin] += 1;
         stats.g[current_bin] += factor;
 
         if (step % 10000 == 0) {
-            if (stats.try_flatten_histogram()) {
+            if (stats.histogram_flatness() < 0.2) {
+                stats.histogram.setZero();
                 factor *= 0.5;
-            }
-            if (factor < 1e-6) {
-                break;
+                if (factor < 1e-6) {
+                    break;
+                }
             }
         }
     }
