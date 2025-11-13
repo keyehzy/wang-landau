@@ -14,6 +14,7 @@ EXAMPLES_SRCS = [
     "src/examples/measure.h",
     "src/examples/utils.h",
     "src/examples/example_measure.cpp",
+    "src/examples/hard_sphere.h",
     "src/wang_landau.h",
 ]
 

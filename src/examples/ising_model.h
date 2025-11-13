@@ -13,7 +13,7 @@ public:
     IsingModel(size_t width, size_t height, double J, Init init = Init::RANDOM) : m_width(width), m_height(height), m_J(J), m_init(init) {}
 
     /// Constructs a Ising model grid with spin configurations according to the specified initialization method.
-    Eigen::MatrixXd generate_configuration(std::mt19937& rng) const override {
+    Eigen::MatrixXd generate_configuration(RNGType& rng) const override {
         switch(m_init) {
             case Init::RANDOM: {
                 std::bernoulli_distribution dist(0.5);
@@ -43,7 +43,7 @@ public:
     }
 
     /// Choose a random spin from the grid. Returns its coordinates and the energy change if flipped.
-    std::tuple<size_t, double> choose_random_element(const Eigen::MatrixXd& spins, std::mt19937& rng) const override {
+    std::tuple<size_t, double> choose_random_element(const Eigen::MatrixXd& spins, RNGType& rng) const override {
         std::uniform_int_distribution<size_t> dist(0, spins.rows() * spins.cols() - 1);
         size_t linear_index = dist(rng);
         size_t row = linear_index / spins.cols();
